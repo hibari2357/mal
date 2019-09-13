@@ -1,0 +1,5 @@
+{
+  "name": "daiki",
+  "version": "1.0.0",
+  "description": "Make a Lisp (mal) language implemented in Javascript",
+}
