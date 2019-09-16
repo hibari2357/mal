@@ -2,4 +2,9 @@
   "name": "daiki",
   "version": "1.0.0",
   "description": "Make a Lisp (mal) language implemented in Javascript",
+  "devDependencies": {
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.4.0",
+    "eslint-config-google": "^0.14.0"
+  }
 }

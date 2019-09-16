@@ -1,8 +1,15 @@
 const readline = require('readline');
+const {read_str} = require('./reader.js');
+const {pr_str} = require('./printer.js');
 
-const READ = (str) => {return str};
+
+
+
+const READ = read_str;
 const EVAL = (str) => {return str};
-const PRINT = (str) => {return str};
+const PRINT =  pr_str;
+
+
 const rep = (str) => {return PRINT(EVAL(READ(str)))};
 
 const rl = readline.createInterface({
@@ -16,10 +23,14 @@ const recursiveRl= () => {
   rl.question('user> ', (answer)=>{
     if(answer==null) rl.close();
     else {
-      console.log(rep(answer));
+      try {
+        console.log(rep(answer));
+      } catch (error) {
+        console.warn(error);
+      }
       recursiveRl();
     }
-  })
+  });
 };
 
 recursiveRl();

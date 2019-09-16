@@ -44,6 +44,7 @@ cs/*.exe
 cs/*.dll
 cs/*.mdb
 d/*.o
+daiki/.eslintrc.js
 elixir/_build
 elixir/deps
 elixir/erl_crash.dump
