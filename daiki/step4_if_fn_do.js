@@ -2,19 +2,15 @@ const readline = require('readline');
 const {Env} = require('./env.js');
 const {read_str} = require('./reader.js');
 const {pr_str} = require('./printer.js');
+const {ns} = require('./core.js');
 
 const READ = read_str;
+const PRINT = pr_str;
+const rep = (str) => PRINT(EVAL(READ(str), repl_env));
 
 const repl_env = new Env(null);
-const num_funcs = {
-  [Symbol.for('+')]: (a, b) => a+b,
-  [Symbol.for('-')]: (a, b) => a-b,
-  [Symbol.for('*')]: (a, b) => a*b,
-  [Symbol.for('/')]: (a, b) => parseInt(a/b, 10),
-};
-
-Object.getOwnPropertySymbols(num_funcs).forEach((key) => {
-  repl_env.set(key, num_funcs[key]);
+Object.keys(ns).forEach((key) => {
+  repl_env.set(Symbol.for(key), ns[key]);
 });
 
 const EVAL = (ast, env) => {
@@ -22,8 +18,8 @@ const EVAL = (ast, env) => {
   else if(ast.length === 0) return ast;
   // apply section
   else {
-    const [sym, a0, a1] = ast;
-    switch(Symbol.keyFor(sym)){
+    const [sym, a0, a1, a2] = ast;
+    switch(typeof sym === 'symbol' ? Symbol.keyFor(sym) : Symbol(':default')){
       case 'def!':
         return env.set(a0, EVAL(a1, env));
       case 'let*':
@@ -33,25 +29,32 @@ const EVAL = (ast, env) => {
           let_env.set(bindings[i], EVAL(bindings[i+1], let_env));
         }
         return EVAL(a1, let_env);
+      case 'do':
+        return eval_ast(ast.slice(1), env)[ast.length-2];
+      case 'if':
+        const cond = EVAL(a0, env);
+        if(cond !== false && cond !== null){
+          return EVAL(a1, env);
+        } else {
+          return typeof a2 === 'undefined' ? null : EVAL(a2, env);
+        }
+      case 'fn*':
+        return (...args) => EVAL(a1, new Env(env, a0, args));
+
       default:
         const [fn, ...args] = eval_ast(ast, env);
         return fn(...args);
     }
   }
 };
-const PRINT = pr_str;
-
 
 const eval_ast = (ast, env) => {
   if(typeof ast === 'symbol') return env.get(ast);
   else if(Array.isArray(ast)){
     return ast.map((item) => EVAL(item, env));
-  }
-  else return ast;
+  } else return ast;
 };
 
-
-const rep = (str) => PRINT(EVAL(READ(str), repl_env));
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -60,11 +63,11 @@ const rl = readline.createInterface({
 
 // [FIX ME]infinite recursion is BAD???
 const recursiveRl= () => {
-  rl.question('user> ', (answer)=>{
-    if(answer==null) return rl.close();
+  rl.question('user> ', (input)=>{
+    if(input==null) return rl.close();
     else {
       try {
-        console.log(rep(answer));
+        console.log(rep(input));
       } catch (error) {
         console.warn(error);
       }

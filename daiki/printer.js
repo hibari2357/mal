@@ -5,6 +5,9 @@ const pr_str = (obj) => {
   else if(typeof obj === 'symbol'){
     return Symbol.keyFor(obj);
   }
+  else if(obj === null){
+    return 'nil';
+  }
   else {
     return obj.toString();
   }

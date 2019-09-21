@@ -58,7 +58,10 @@ const read_atom = (reader) => {
   // console.log('read_atom:', token);
   if (token.match(/^-?[0-9]+$/)) {
     return parseInt(token, 10);
-  } else {
+  }
+  else if(token === 'nil') return null;
+  else if(token === 'true' || token === 'false') return (token === 'true');
+  else {
     return Symbol.for(token);
   }
 };

@@ -1,7 +1,11 @@
 class Env {
-  constructor(outer){
+  constructor(outer={}, binds=[], exprs=[]){
     this.outer = outer;
     this.data = {};
+
+    for(let i=0; i<binds.length; i++){
+      this.set(binds[i], exprs[i]);
+    }
   }
 
   set(key, val){
